@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>لوحة تحكم ديناميكية لأهداف المبيعات</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.sheetjs.com/xlsx-latest/package/dist/xlsx.full.min.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Cairo', sans-serif; background-color: #f7fafc; }
+        input[type="number"] { text-align: left; direction: ltr; }
+        .status-badge { transition: all 0.3s ease-in-out; }
+        .manager-section, #error-message, #loading-message { animation: fadeIn 0.5s ease-in-out; }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+    </style>
+</head>
+<body class="p-4 md:p-8">
+    <div class="max-w-7xl mx-auto">
+        <header class="mb-8 text-center">
+            <h1 class="text-3xl md:text-4xl font-bold text-gray-800">لوحة تحكم أهداف المبيعات الشهرية</h1>
+            <p class="text-gray-600 mt-2">قم بالتصفية حسب المدير، ثم حدد الهدف الإجمالي لكل معرض ووزّع الأهداف على الموظفين.</p>
+            <div class="mt-6 max-w-md mx-auto flex flex-col items-center space-y-4">
+                <div>
+                    <label for="manager-filter" class="block text-sm font-medium text-gray-700 mb-2">تصفية حسب المدير المشرف:</label>
+                    <select id="manager-filter" class="block w-full p-3 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500" disabled>
+                        <option value="all">عرض الكل</option>
+                    </select>
+                </div>
+                <button id="export-button" class="px-8 py-3 bg-green-600 text-white font-semibold rounded-md shadow-md hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 disabled:bg-gray-400 disabled:cursor-not-allowed" disabled>
+                    تصدير إلى Excel
+                </button>
+            </div>
+        </header>
+        <div id="loading-message" class="text-center p-8">
+            <p class="text-lg text-gray-600">جاري تحميل البيانات من ملف data.json...</p>
+        </div>
+        <div id="error-message" class="hidden text-center p-8 bg-red-100 border border-red-400 text-red-700 rounded-lg"></div>
+        <div id="dashboard-container" class="space-y-12"></div>
+    </div>
+
+    <script>
+        const container = document.getElementById('dashboard-container');
+        const managerFilter = document.getElementById('manager-filter');
+        const loadingMessage = document.getElementById('loading-message');
+        const errorMessage = document.getElementById('error-message');
+        const exportButton = document.getElementById('export-button');
+
+        function normalizeName(name) {
+            if (!name || typeof name !== 'string') return '';
+            return name.toLowerCase().trim().replace(/[-_]/g, ' ').replace(/\s+/g, ' ');
+        }
+
+        async function initializeDashboard() {
+            try {
+                const response = await fetch('data.json');
+                if (!response.ok) {
+                    throw new Error("فشل تحميل ملف 'data.json'.<br>يرجى التأكد من تشغيل سكربت البايثون 'converter.py' أولاً لوإنشاء هذا الملف.");
+                }
+                const data = await response.json();
+                const { managers, employees_by_store } = data;
+
+                loadingMessage.style.display = 'none';
+                managerFilter.disabled = false;
+                exportButton.disabled = false; // Enable export button
+                renderDashboard(employees_by_store, managers);
+
+            } catch (error) {
+                loadingMessage.style.display = 'none';
+                errorMessage.innerHTML = error.message;
+                errorMessage.classList.remove('hidden');
+                console.error(error);
+            }
+        }
+
+        function formatCurrency(number) {
+            return new Intl.NumberFormat('ar-SA', { style: 'currency', currency: 'SAR', minimumFractionDigits: 0 }).format(number);
+        }
+
+        function updateStoreTotals(storeId) {
+            const storeCard = document.getElementById(`store-card-${storeId}`);
+            if (!storeCard) return;
+            const storeTargetInput = storeCard.querySelector('.store-target-input');
+            const totalEmployeesTargetEl = storeCard.querySelector('.total-employees-target');
+            const statusBadge = storeCard.querySelector('.status-badge');
+            const statusText = storeCard.querySelector('.status-text');
+            const storeTarget = parseFloat(storeTargetInput.value) || 0;
+            let totalEmployeesTarget = 0;
+            storeCard.querySelectorAll('.employee-target-input').forEach(input => {
+                totalEmployeesTarget += parseFloat(input.value) || 0;
+            });
+            totalEmployeesTargetEl.textContent = formatCurrency(totalEmployeesTarget);
+            if (storeTarget === 0) {
+                statusBadge.className = 'status-badge p-2 h-10 flex items-center justify-center rounded-md font-bold bg-gray-100 text-gray-800';
+                statusText.textContent = "أدخل هدف المعرض";
+            } else if (totalEmployeesTarget >= storeTarget) {
+                statusBadge.className = 'status-badge p-2 h-10 flex items-center justify-center rounded-md font-bold bg-green-100 text-green-800';
+                statusText.textContent = "تم تحقيق الهدف";
+            } else {
+                statusBadge.className = 'status-badge p-2 h-10 flex items-center justify-center rounded-md font-bold bg-red-100 text-red-800';
+                statusText.textContent = `متبقي: ${formatCurrency(storeTarget - totalEmployeesTarget)}`;
+            }
+        }
+        
+        function createStoreCard(storeId, storeData, normalizedStoreName) {
+            const employees = storeData.employees || [];
+            let employeesHtml = '';
+            
+            // Create headers for all 9 months
+            let headerHtml = '<th class="p-3">اسم الموظف</th>';
+            for (let i = 1; i <= 9; i++) {
+                headerHtml += `<th class="p-3 whitespace-nowrap">مبيعات شهر ${i}</th>`;
+            }
+            headerHtml += '<th class="p-3 text-blue-600">التارجت الجديد</th>';
+
+            if (employees.length > 0) {
+                employees.forEach(employee => {
+                    let salesCells = '';
+                    employee.sales.forEach(sale => {
+                        salesCells += `<td class="p-3 text-gray-600">${formatCurrency(sale)}</td>`;
+                    });
+                    
+                    // Add data attributes for easy access during export
+                    employeesHtml += `
+                        <tr class="border-b hover:bg-gray-50" data-employee-name="${employee.name}" data-system-name="${employee.system_name}">
+                            <td class="p-3 font-semibold text-gray-700">${employee.name}</td>
+                            ${salesCells}
+                            <td class="p-3"><input type="number" min="0" placeholder="0" class="employee-target-input w-28 p-2 border rounded-md focus:ring-2 focus:ring-blue-500" data-store-id="${storeId}"></td>
+                        </tr>`;
+                });
+            } else {
+                employeesHtml = `<tr><td colspan="11" class="p-4 text-center text-gray-500">لا يوجد موظفين لهذا المعرض.</td></tr>`;
+            }
+            return `<div class="bg-white rounded-xl shadow-md p-6 border border-gray-200" id="store-card-${storeId}"><h3 class="text-xl font-bold text-gray-800 mb-4">${storeData.original_name}</h3><div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6 bg-gray-50 p-4 rounded-lg"><div><label class="block text-sm font-medium text-gray-700 mb-1">الهدف الإجمالي للمعرض</label><input type="number" min="0" placeholder="100000" class="store-target-input w-full p-2 border rounded-md" data-store-id="${storeId}"></div><div><label class="block text-sm font-medium text-gray-700 mb-1">مجموع أهداف الموظفين</label><div class="total-employees-target p-2 h-10 flex items-center font-bold text-lg text-blue-700">${formatCurrency(0)}</div></div><div><label class="block text-sm font-medium text-gray-700 mb-1">الحالة</label><div class="status-badge p-2 h-10 flex items-center justify-center rounded-md bg-gray-100 text-gray-800 font-bold"><span class="status-text">أدخل هدف المعرض</span></div></div></div><div class="overflow-x-auto"><table class="w-full text-right text-sm"><thead class="bg-gray-100 text-gray-600 uppercase"><tr>${headerHtml}</tr></thead><tbody class="divide-y">${employeesHtml}</tbody></table></div></div>`;
+        }
+
+        function renderDashboard(employeesByStore, managers) {
+            let storeIdCounter = 1;
+            const assignedStores = new Set();
+            
+            for (const managerName in managers) {
+                const option = document.createElement('option');
+                option.value = managerName;
+                option.textContent = managerName;
+                managerFilter.appendChild(option);
+
+                const managerSection = document.createElement('div');
+                managerSection.className = 'manager-section';
+                managerSection.dataset.managerName = managerName;
+                let storeCardsHtml = '';
+                
+                managers[managerName].forEach(originalStoreName => {
+                    const normalizedName = normalizeName(originalStoreName);
+                    const storeData = employeesByStore[normalizedName];
+                    if (storeData) {
+                        storeCardsHtml += createStoreCard(storeIdCounter++, storeData, normalizedName);
+                        assignedStores.add(normalizedName);
+                    }
+                });
+
+                managerSection.innerHTML = `<h2 class="text-2xl md:text-3xl font-bold text-indigo-600 border-b-2 border-indigo-200 pb-2 mb-6">${managerName}</h2><div class="grid grid-cols-1 gap-6">${storeCardsHtml}</div>`;
+                container.appendChild(managerSection);
+            }
+            
+            const allEmployeeStores = new Set(Object.keys(employeesByStore));
+            const unassignedStores = [...allEmployeeStores].filter(normalizedStoreName => !assignedStores.has(normalizedStoreName));
+
+            if (unassignedStores.length > 0) {
+                const unassignedManagerName = "معارض غير مسندة لمدير";
+                const option = document.createElement('option');
+                option.value = unassignedManagerName;
+                option.textContent = unassignedManagerName;
+                managerFilter.appendChild(option);
+
+                const managerSection = document.createElement('div');
+                managerSection.className = 'manager-section';
+                managerSection.dataset.managerName = unassignedManagerName;
+                let storeCardsHtml = '';
+                
+                unassignedStores.forEach(normalizedStoreName => {
+                    const storeData = employeesByStore[normalizedStoreName];
+                    storeCardsHtml += createStoreCard(storeIdCounter++, storeData, normalizedStoreName);
+                });
+                
+                managerSection.innerHTML = `<h2 class="text-2xl md:text-3xl font-bold text-amber-600 border-b-2 border-amber-200 pb-2 mb-6">${unassignedManagerName}</h2><div class="grid grid-cols-1 gap-6">${storeCardsHtml}</div>`;
+                container.appendChild(managerSection);
+            }
+        }
+
+        function exportToExcel() {
+            const dataToExport = [];
+            document.querySelectorAll('#dashboard-container tbody tr').forEach(row => {
+                // Check if it's a valid employee row
+                if (row.dataset.employeeName && row.dataset.systemName) {
+                    const targetInput = row.querySelector('.employee-target-input');
+                    const targetValue = targetInput ? parseFloat(targetInput.value) || 0 : 0;
+                    
+                    // We can choose to export only employees with a set target
+                    // if (targetValue > 0) { 
+                        dataToExport.push({
+                            'اسم الموظف': row.dataset.employeeName,
+                            'اسمه عالسستم': row.dataset.systemName,
+                            'التارجت المدخل': targetValue
+                        });
+                    // }
+                }
+            });
+
+            if (dataToExport.length === 0) {
+                // Provide feedback to the user without using alert()
+                const originalText = exportButton.textContent;
+                exportButton.textContent = 'لا يوجد بيانات للتصدير!';
+                exportButton.classList.add('bg-yellow-500', 'hover:bg-yellow-600');
+                setTimeout(() => {
+                    exportButton.textContent = originalText;
+                    exportButton.classList.remove('bg-yellow-500', 'hover:bg-yellow-600');
+                }, 3000);
+                return;
+            }
+
+            const worksheet = XLSX.utils.json_to_sheet(dataToExport);
+            const workbook = XLSX.utils.book_new();
+            XLSX.utils.book_append_sheet(workbook, worksheet, "Targets");
+            XLSX.writeFile(workbook, "Targets_Export.xlsx");
+        }
+        
+        document.addEventListener('DOMContentLoaded', () => {
+            initializeDashboard();
+            container.addEventListener('input', e => { if (e.target.matches('.store-target-input, .employee-target-input')) updateStoreTotals(e.target.dataset.storeId); });
+            managerFilter.addEventListener('change', e => {
+                const selected = e.target.value;
+                document.querySelectorAll('.manager-section').forEach(s => s.style.display = (selected === 'all' || s.dataset.managerName === selected) ? 'block' : 'none');
+            });
+            exportButton.addEventListener('click', exportToExcel);
+        });
+    </script>
+</body>
+</html>
+
