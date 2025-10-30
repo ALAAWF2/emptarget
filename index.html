@@ -22,13 +22,11 @@
     .is-excluded { text-decoration:line-through; color:#9ca3af; background:#f3f4f6; }
     .exclude-toggle { transition:transform .2s; border:none; background:transparent; cursor:pointer; }
     .exclude-toggle:hover { transform:scale(1.2); }
-    /* تضييق الجدول ليظهر كامل بدون تمرير أفقي */
     table { table-layout:fixed; }
     th, td { word-wrap:break-word; }
   </style>
 </head>
 <body class="p-4 md:p-8">
-  <!-- الحاوية صارت بعرض كامل بدون max-w -->
   <div class="w-full mx-auto">
     <header class="mb-8 text-center">
       <h1 class="text-2xl md:text-4xl font-bold text-gray-800">لوحة تحكم أهداف المبيعات الشهرية</h1>
@@ -55,328 +53,196 @@
   </div>
 
   <script>
-    const container = document.getElementById('dashboard-container');
-    const managerFilter = document.getElementById('manager-filter');
-    const loadingMessage = document.getElementById('loading-message');
-    const errorMessage = document.getElementById('error-message');
-    const exportButton = document.getElementById('export-button');
+    const container=document.getElementById('dashboard-container');
+    const managerFilter=document.getElementById('manager-filter');
+    const loadingMessage=document.getElementById('loading-message');
+    const errorMessage=document.getElementById('error-message');
+    const exportButton=document.getElementById('export-button');
 
     function normalizeName(name){
-      if(!name || typeof name!=='string') return '';
+      if(!name||typeof name!=='string')return '';
       return name.toLowerCase().trim().replace(/[-_]/g,' ').replace(/\s+/g,' ');
     }
 
     async function initializeDashboard(){
       try{
-        const response = await fetch('data.json');
-        if(!response.ok){
-          throw new Error("فشل تحميل ملف 'data.json'.<br>يرجى التأكد من تشغيل سكربت البايثون 'converter.py' أولاً لوإنشاء هذا الملف.");
-        }
-        const data = await response.json();
-        const { managers, employees_by_store } = data;
-
+        const response=await fetch('data.json');
+        if(!response.ok) throw new Error("فشل تحميل ملف data.json");
+        const data=await response.json();
+        const {managers,employees_by_store}=data;
         loadingMessage.style.display='none';
         managerFilter.disabled=false;
         exportButton.disabled=false;
-        renderDashboard(employees_by_store, managers);
-
-      }catch(error){
+        renderDashboard(employees_by_store,managers);
+      }catch(err){
         loadingMessage.style.display='none';
-        errorMessage.innerHTML = error.message;
+        errorMessage.textContent=err.message;
         errorMessage.classList.remove('hidden');
-        console.error(error);
       }
     }
 
-    function formatCurrency(number){
-      return new Intl.NumberFormat('en-SA',{style:'currency',currency:'SAR',minimumFractionDigits:0}).format(number);
+    function formatCurrency(num){
+      return new Intl.NumberFormat('en-SA',{style:'currency',currency:'SAR',minimumFractionDigits:0}).format(num);
     }
 
     function updateStoreTotals(storeId){
-      const storeCard = document.getElementById(`store-card-${storeId}`);
-      if(!storeCard) return;
-      const storeTargetInput = storeCard.querySelector('.store-target-input');
-      const totalEmployeesTargetEl = storeCard.querySelector('.total-employees-target');
-      const statusBadge = storeCard.querySelector('.status-badge');
-      const statusText = storeCard.querySelector('.status-text');
-
-      const storeTarget = parseFloat(storeTargetInput.value)||0;
-      let totalEmployeesTarget = 0;
-      storeCard.querySelectorAll('.employee-target-input').forEach(input=>{
-        totalEmployeesTarget += parseFloat(input.value)||0;
-      });
-      totalEmployeesTargetEl.textContent = formatCurrency(totalEmployeesTarget);
-
-      if(storeTarget===0){
-        statusBadge.className='status-badge p-2 h-10 flex items-center justify-center rounded-md font-bold bg-gray-100 text-gray-800';
-        statusText.textContent="أدخل هدف المعرض";
-      }else if(totalEmployeesTarget >= storeTarget){
-        statusBadge.className='status-badge p-2 h-10 flex items-center justify-center rounded-md font-bold bg-green-100 text-green-800';
-        statusText.textContent="تم تحقيق الهدف";
+      const card=document.getElementById(`store-card-${storeId}`);
+      if(!card)return;
+      const input=card.querySelector('.store-target-input');
+      const target=parseFloat(input.value)||0;
+      let total=0;
+      card.querySelectorAll('.employee-target-input').forEach(inp=>total+=parseFloat(inp.value)||0);
+      const totalEl=card.querySelector('.total-employees-target');
+      const badge=card.querySelector('.status-badge');
+      const text=card.querySelector('.status-text');
+      totalEl.textContent=formatCurrency(total);
+      if(target===0){
+        badge.className='status-badge p-2 h-10 flex items-center justify-center rounded-md font-bold bg-gray-100 text-gray-800';
+        text.textContent='أدخل هدف المعرض';
+      }else if(total>=target){
+        badge.className='status-badge p-2 h-10 flex items-center justify-center rounded-md font-bold bg-green-100 text-green-800';
+        text.textContent='تم تحقيق الهدف';
       }else{
-        statusBadge.className='status-badge p-2 h-10 flex items-center justify-center rounded-md font-bold bg-red-100 text-red-800';
-        statusText.textContent=`متبقي: ${formatCurrency(storeTarget - totalEmployeesTarget)}`;
+        badge.className='status-badge p-2 h-10 flex items-center justify-center rounded-md font-bold bg-red-100 text-red-800';
+        text.textContent=`متبقي: ${formatCurrency(target-total)}`;
       }
     }
 
-    function createStoreCard(storeId, storeData){
-      const employees = storeData.employees || [];
-      let employeesHtml = '';
+    function createStoreCard(storeId,storeData){
+      const employees=storeData.employees||[];
+      const targetValue=storeData.target||0;
+      let employeesHtml='';
 
-      // شلت whitespace-nowrap من الرؤوس وخففت الحشوة والخط
-      let headerHtml = `<th class="p-2 text-center w-10 text-xs md:text-sm">استثناء</th><th class="p-2 text-xs md:text-sm sortable" data-sort-key="name" data-store-id="${storeId}">اسم الموظف</th>`;
-      for(let i=1;i<=9;i++){
-        headerHtml += `<th class="p-2 text-xs md:text-sm sortable" data-sort-key="sales-${i-1}" data-store-id="${storeId}">مبيعات شهر ${i}</th>`;
+      let headerHtml=`<th class="p-2">استثناء</th><th class="p-2">اسم الموظف</th>`;
+      for(let i=1;i<=10;i++){
+        headerHtml+=`<th class="p-2">مبيعات شهر ${i}</th>`;
       }
-      headerHtml += `<th class="p-2 text-xs md:text-sm sortable text-blue-600" data-sort-key="target" data-store-id="${storeId}">التارجت الجديد</th>`;
+      headerHtml+=`<th class="p-2 text-blue-600">التارجت الجديد</th><th class="p-2">ملاحظات</th>`;
 
       if(employees.length>0){
-        employees.forEach(employee=>{
-          let salesCells='';
-          employee.sales.forEach(sale=>{
-            salesCells += `<td class="p-2 text-gray-600 text-xs md:text-sm">${formatCurrency(sale)}</td>`;
-          });
-          const last3 = employee.sales.slice(-3);
-          const avgSales = last3.reduce((a,b)=>a+b,0)/(last3.length||1);
-
-          employeesHtml += `
-            <tr class="border-b hover:bg-gray-50"
-                data-excluded="false"
-                data-employee-name="${employee.name}"
-                data-system-name="${employee.system_name}"
-                data-avg-sales="${avgSales}">
-              <td class="p-2 text-center"><button class="exclude-toggle text-lg" title="استثناء من التوزيع التلقائي">✔️</button></td>
-              <td class="p-2 font-semibold text-gray-700 text-xs md:text-sm">${employee.name}</td>
+        employees.forEach(emp=>{
+          const salesCells=emp.sales.map(s=>`<td class="p-2 text-gray-600 text-xs md:text-sm">${formatCurrency(s)}</td>`).join('');
+          employeesHtml+=`
+            <tr class="border-b" data-excluded="false" data-employee-name="${emp.name}" data-system-name="${emp.system_name}">
+              <td class="p-2 text-center"><button class="exclude-toggle text-lg">✔️</button></td>
+              <td class="p-2 font-semibold">${emp.name}</td>
               ${salesCells}
-              <td class="p-2"><input type="number" min="0" placeholder="0" class="employee-target-input w-24 md:w-28 p-2 border rounded-md focus:ring-2 focus:ring-blue-500" data-store-id="${storeId}"></td>
+              <td class="p-2"><input type="number" min="0" placeholder="0" class="employee-target-input w-24 p-2 border rounded-md" data-store-id="${storeId}"></td>
+              <td class="p-2 text-gray-500">${emp.notes||''}</td>
             </tr>`;
         });
       }else{
-        employeesHtml = `<tr><td colspan="12" class="p-4 text-center text-gray-500 text-sm">لا يوجد موظفين لهذا المعرض.</td></tr>`;
+        employeesHtml=`<tr><td colspan="13" class="p-4 text-center text-gray-500">لا يوجد موظفين لهذا المعرض.</td></tr>`;
       }
 
       return `
-        <div class="bg-white rounded-xl shadow-md p-6 border border-gray-200" id="store-card-${storeId}">
-          <h3 class="text-lg md:text-xl font-bold text-gray-800 mb-4">${storeData.original_name}</h3>
-
-          <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6 bg-gray-50 p-4 rounded-lg items-end">
-            <div>
-              <label class="block text-sm font-medium text-gray-700 mb-1">الهدف الإجمالي للمعرض</label>
-              <input type="number" min="0" placeholder="100000" class="store-target-input w-full p-2 border rounded-md" data-store-id="${storeId}">
-            </div>
-            <div>
-              <button class="auto-distribute-btn w-full px-4 py-2 bg-blue-600 text-white font-semibold rounded-md shadow-md hover:bg-blue-700" data-store-id="${storeId}">توزيع تلقائي</button>
-            </div>
-            <div>
-              <label class="block text-sm font-medium text-gray-700 mb-1">مجموع أهداف الموظفين</label>
-              <div class="total-employees-target p-2 h-10 flex items-center font-bold text-lg text-blue-700">${formatCurrency(0)}</div>
-            </div>
-            <div>
-              <label class="block text-sm font-medium text-gray-700 mb-1">الحالة</label>
-              <div class="status-badge p-2 h-10 flex items-center justify-center rounded-md bg-gray-100 text-gray-800 font-bold">
-                <span class="status-text">أدخل هدف المعرض</span>
-              </div>
-            </div>
-          </div>
-
-          <!-- شلت overflow-x-auto -->
+      <div class="bg-white rounded-xl shadow-md p-6 border border-gray-200" id="store-card-${storeId}">
+        <h3 class="text-lg font-bold text-gray-800 mb-4">${storeData.original_name}</h3>
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6 bg-gray-50 p-4 rounded-lg items-end">
           <div>
-            <table class="w-full table-fixed text-right text-xs md:text-sm employee-table">
-              <thead class="bg-gray-100 text-gray-600 uppercase">
-                <tr>${headerHtml}</tr>
-              </thead>
-              <tbody class="divide-y">${employeesHtml}</tbody>
-            </table>
+            <label class="block text-sm font-medium mb-1">الهدف الإجمالي للمعرض</label>
+            <input type="number" min="0" value="${targetValue}" class="store-target-input w-full p-2 border rounded-md" data-store-id="${storeId}">
           </div>
-        </div>`;
+          <div><button class="auto-distribute-btn w-full px-4 py-2 bg-blue-600 text-white rounded-md" data-store-id="${storeId}">توزيع تلقائي</button></div>
+          <div>
+            <label class="block text-sm font-medium mb-1">مجموع أهداف الموظفين</label>
+            <div class="total-employees-target p-2 h-10 flex items-center font-bold text-lg text-blue-700">${formatCurrency(0)}</div>
+          </div>
+          <div>
+            <label class="block text-sm font-medium mb-1">الحالة</label>
+            <div class="status-badge p-2 h-10 flex items-center justify-center rounded-md bg-gray-100 text-gray-800 font-bold">
+              <span class="status-text">أدخل هدف المعرض</span>
+            </div>
+          </div>
+        </div>
+        <div>
+          <table class="w-full text-xs md:text-sm employee-table">
+            <thead class="bg-gray-100 text-gray-600 uppercase"><tr>${headerHtml}</tr></thead>
+            <tbody>${employeesHtml}</tbody>
+          </table>
+        </div>
+      </div>`;
     }
 
-    function renderDashboard(employeesByStore, managers){
-      let storeIdCounter=1;
-      const assignedStores=new Set();
-
-      for(const managerName in managers){
-        const option=document.createElement('option');
-        option.value=managerName; option.textContent=managerName;
-        managerFilter.appendChild(option);
-
+    function renderDashboard(employeesByStore,managers){
+      let storeId=1;
+      for(const manager in managers){
         const managerSection=document.createElement('div');
         managerSection.className='manager-section';
-        managerSection.dataset.managerName=managerName;
-
-        let storeCardsHtml='';
-        managers[managerName].forEach(originalStoreName=>{
-          const normalizedName=normalizeName(originalStoreName);
-          const storeData=employeesByStore[normalizedName];
-          if(storeData){
-            storeCardsHtml += createStoreCard(storeIdCounter++, storeData);
-            assignedStores.add(normalizedName);
-          }
+        managerSection.dataset.managerName=manager;
+        let html='';
+        managers[manager].forEach(store=>{
+          const norm=normalizeName(store);
+          const data=employeesByStore[norm];
+          if(data) html+=createStoreCard(storeId++,data);
         });
-
-        managerSection.innerHTML = `
-          <h2 class="text-xl md:text-3xl font-bold text-indigo-600 border-b-2 border-indigo-200 pb-2 mb-6">${managerName}</h2>
-          <div class="grid grid-cols-1 gap-6">${storeCardsHtml}</div>`;
+        managerSection.innerHTML=`<h2 class="text-xl font-bold text-indigo-600 border-b-2 border-indigo-200 pb-2 mb-6">${manager}</h2><div class="grid grid-cols-1 gap-6">${html}</div>`;
         container.appendChild(managerSection);
-      }
-
-      const allEmployeeStores=new Set(Object.keys(employeesByStore));
-      const unassignedStores=[...allEmployeeStores].filter(n=>!assignedStores.has(n));
-      if(unassignedStores.length>0){
-        const unassignedManagerName="معارض غير مسندة لمدير";
         const option=document.createElement('option');
-        option.value=unassignedManagerName; option.textContent=unassignedManagerName;
+        option.value=manager; option.textContent=manager;
         managerFilter.appendChild(option);
-
-        const managerSection=document.createElement('div');
-        managerSection.className='manager-section';
-        managerSection.dataset.managerName=unassignedManagerName;
-
-        let storeCardsHtml='';
-        unassignedStores.forEach(n=>{
-          const storeData=employeesByStore[n];
-          storeCardsHtml += createStoreCard(storeIdCounter++, storeData);
-        });
-
-        managerSection.innerHTML = `
-          <h2 class="text-xl md:text-3xl font-bold text-amber-600 border-b-2 border-amber-200 pb-2 mb-6">${unassignedManagerName}</h2>
-          <div class="grid grid-cols-1 gap-6">${storeCardsHtml}</div>`;
-        container.appendChild(managerSection);
       }
     }
 
-    function autoDistributeTarget(storeId){
-      const storeCard=document.getElementById(`store-card-${storeId}`);
-      const storeTarget=parseFloat(storeCard.querySelector('.store-target-input').value)||0;
-      if(storeTarget===0) return;
-
-      const includedRows=storeCard.querySelectorAll('tbody tr[data-excluded="false"]');
-      const excludedRows=storeCard.querySelectorAll('tbody tr[data-excluded="true"]');
-      const n = includedRows.length;
-
-      let rounded=0;
-      if(n>0){
-        const per = storeTarget/n;
-        rounded = Math.round(per/1000)*1000;
-      }
-
-      includedRows.forEach(r=>{ r.querySelector('.employee-target-input').value=rounded; });
-      excludedRows.forEach(r=>{ r.querySelector('.employee-target-input').value=0; });
-
-      updateStoreTotals(storeId);
-    }
-
-    function sortEmployeeTable(storeId,key,order){
-      const table=document.getElementById(`store-card-${storeId}`).querySelector('.employee-table');
-      const tbody=table.querySelector('tbody');
-      const rows=Array.from(tbody.querySelectorAll('tr'));
-
-      rows.sort((a,b)=>{
-        let valA,valB;
-        const nameColIndex=1;
-        const salesStartIndex=2;
-
-        if(key==='name'){
-          valA=a.children[nameColIndex].textContent.trim();
-          valB=b.children[nameColIndex].textContent.trim();
-        }else if(key.startsWith('sales-')){
-          const colIndex=parseInt(key.split('-')[1])+salesStartIndex;
-          valA=parseFloat(a.children[colIndex].textContent.replace(/[^\d.-]/g,''))||0;
-          valB=parseFloat(b.children[colIndex].textContent.replace(/[^\d.-]/g,''))||0;
-        }else if(key==='target'){
-          valA=parseFloat(a.querySelector('.employee-target-input').value)||0;
-          valB=parseFloat(b.querySelector('.employee-target-input').value)||0;
-        }
-        if(typeof valA==='string') return valA.localeCompare(valB)*(order==='asc'?1:-1);
-        return (valA-valB)*(order==='asc'?1:-1);
-      });
-      rows.forEach(r=>tbody.appendChild(r));
+    function autoDistributeTarget(id){
+      const card=document.getElementById(`store-card-${id}`);
+      const storeTarget=parseFloat(card.querySelector('.store-target-input').value)||0;
+      if(storeTarget===0)return;
+      const rows=card.querySelectorAll('tbody tr[data-excluded="false"]');
+      const per=storeTarget/(rows.length||1);
+      rows.forEach(r=>r.querySelector('.employee-target-input').value=Math.round(per/1000)*1000);
+      updateStoreTotals(id);
     }
 
     function exportToExcel(){
-      const dataToExport=[];
+      const data=[];
       document.querySelectorAll('.manager-section').forEach(section=>{
         const managerName=section.querySelector('h2').textContent.trim();
-        section.querySelectorAll('.bg-white').forEach(card=>{
-          const storeName=card.querySelector('h3').textContent.trim();
-          card.querySelectorAll('tbody tr').forEach(row=>{
-            if(row.dataset.employeeName){
-              const targetInput=row.querySelector('.employee-target-input');
-              const targetValue=targetInput?parseFloat(targetInput.value)||0:0;
-              const avgSales=parseFloat(row.dataset.avgSales)||0;
-              dataToExport.push({
-                'المدير المسؤول':managerName,
-                'اسم المعرض':storeName,
-                'اسم الموظف':row.dataset.employeeName,
-                'اسمه عالسستم':row.dataset.systemName,
-                'متوسط آخر 3 شهور':avgSales,
-                'التارجت المدخل':targetValue
-              });
-            }
-          });
+        section.querySelectorAll('tbody tr').forEach(row=>{
+          if(row.dataset.employeeName){
+            const targetVal=parseFloat(row.querySelector('.employee-target-input').value)||0;
+            const storeName=row.closest('.bg-white').querySelector('h3').textContent.trim();
+            const notes=row.querySelector('td:last-child').textContent.trim();
+            data.push({
+              'المدير المسؤول':managerName,
+              'اسم المعرض':storeName,
+              'اسم الموظف':row.dataset.employeeName,
+              'اسمه عالسستم':row.dataset.systemName,
+              'التارجت المدخل':targetVal,
+              'الملاحظات':notes
+            });
+          }
         });
       });
-      if(dataToExport.length===0){
-        const original=exportButton.textContent;
-        exportButton.textContent='لا يوجد بيانات للتصدير!';
-        exportButton.classList.add('bg-yellow-500','hover:bg-yellow-600');
-        setTimeout(()=>{
-          exportButton.textContent=original;
-          exportButton.classList.remove('bg-yellow-500','hover:bg-yellow-600');
-        },3000);
-        return;
-      }
-      const ws=XLSX.utils.json_to_sheet(dataToExport);
+      if(data.length===0)return alert('لا يوجد بيانات للتصدير');
+      const ws=XLSX.utils.json_to_sheet(data);
       const wb=XLSX.utils.book_new();
-      XLSX.utils.book_append_sheet(wb, ws, "Targets");
-      XLSX.writeFile(wb, "Targets_Export.xlsx");
+      XLSX.utils.book_append_sheet(wb,ws,'Targets');
+      XLSX.writeFile(wb,'Targets_Export.xlsx');
     }
 
     document.addEventListener('DOMContentLoaded',()=>{
       initializeDashboard();
-
-      container.addEventListener('input', e=>{
-        if(e.target.matches('.store-target-input, .employee-target-input')) updateStoreTotals(e.target.dataset.storeId);
+      container.addEventListener('input',e=>{
+        if(e.target.matches('.store-target-input,.employee-target-input')) updateStoreTotals(e.target.dataset.storeId);
       });
-
-      managerFilter.addEventListener('change', e=>{
+      managerFilter.addEventListener('change',e=>{
         const selected=e.target.value;
-        document.querySelectorAll('.manager-section').forEach(s=>{
-          s.style.display = (selected==='all' || s.dataset.managerName===selected) ? 'block' : 'none';
+        document.querySelectorAll('.manager-section').forEach(sec=>{
+          sec.style.display=(selected==='all'||sec.dataset.managerName===selected)?'block':'none';
         });
       });
-
-      exportButton.addEventListener('click', exportToExcel);
-
-      container.addEventListener('click', e=>{
-        if(e.target.matches('.auto-distribute-btn')){
-          autoDistributeTarget(e.target.dataset.storeId);
-        }
-        if(e.target.matches('.sortable')){
-          const storeId=e.target.dataset.storeId; if(!storeId) return;
-          const key=e.target.dataset.sortKey;
-          const isAsc=e.target.classList.contains('sort-asc');
-          document.querySelectorAll(`#store-card-${storeId} .sortable`).forEach(th=>th.classList.remove('sort-asc','sort-desc'));
-          if(isAsc){
-            e.target.classList.add('sort-desc'); sortEmployeeTable(storeId,key,'desc');
-          }else{
-            e.target.classList.add('sort-asc');  sortEmployeeTable(storeId,key,'asc');
-          }
-        }
+      exportButton.addEventListener('click',exportToExcel);
+      container.addEventListener('click',e=>{
+        if(e.target.matches('.auto-distribute-btn')) autoDistributeTarget(e.target.dataset.storeId);
         if(e.target.matches('.exclude-toggle')){
           const row=e.target.closest('tr');
           const storeId=e.target.closest('.bg-white').id.replace('store-card-','');
-          const isExcluded=row.dataset.excluded==='true';
-
-          row.dataset.excluded=!isExcluded;
-          e.target.textContent = !isExcluded ? '🚫' : '✔️';
-          e.target.title = !isExcluded ? 'إعادة الموظف للتوزيع' : 'استثناء من التوزيع التلقائي';
-          row.classList.toggle('is-excluded', !isExcluded);
-
-          if(!isExcluded){
-            row.querySelector('.employee-target-input').value=0;
-            updateStoreTotals(storeId);
-          }
+          const excluded=row.dataset.excluded==='true';
+          row.dataset.excluded=!excluded;
+          e.target.textContent=!excluded?'🚫':'✔️';
+          row.classList.toggle('is-excluded',!excluded);
+          if(!excluded){ row.querySelector('.employee-target-input').value=0; updateStoreTotals(storeId); }
         }
       });
     });
