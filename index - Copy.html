@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>لوحة تحكم ديناميكية لأهداف المبيعات</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.sheetjs.com/xlsx-latest/package/dist/xlsx.full.min.js"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700&display=swap" rel="stylesheet">
+  <style>
+    body { font-family:'Cairo',sans-serif; background:#f7fafc; }
+    input[type="number"] { text-align:left; direction:ltr; }
+    .status-badge { transition:all .3s ease-in-out; }
+    .manager-section,#error-message,#loading-message { animation:fadeIn .5s ease-in-out; }
+    @keyframes fadeIn { from{opacity:0;transform:translateY(20px)} to{opacity:1;transform:translateY(0)} }
+    .sortable { cursor:pointer; user-select:none; }
+    .sortable:hover { background:#e2e8f0; }
+    .sort-asc::after { content:' ▲'; font-size:.8em; }
+    .sort-desc::after { content:' ▼'; font-size:.8em; }
+    .is-excluded { text-decoration:line-through; color:#9ca3af; background:#f3f4f6; }
+    .exclude-toggle { transition:transform .2s; border:none; background:transparent; cursor:pointer; }
+    .exclude-toggle:hover { transform:scale(1.2); }
+    table { table-layout:fixed; }
+    th, td { word-wrap:break-word; }
+  </style>
+</head>
+<body class="p-4 md:p-8">
+  <div class="w-full mx-auto">
+    <header class="mb-8 text-center">
+      <h1 class="text-2xl md:text-4xl font-bold text-gray-800">لوحة تحكم أهداف المبيعات الشهرية</h1>
+      <p class="text-gray-600 mt-2">قم بالتصفية حسب المدير، ثم حدد الهدف الإجمالي لكل معرض ووزّع الأهداف على الموظفين.</p>
+      <div class="mt-6 max-w-md mx-auto flex flex-col items-center space-y-4">
+        <div>
+          <label for="manager-filter" class="block text-sm font-medium text-gray-700 mb-2">تصفية حسب المدير المشرف:</label>
+          <select id="manager-filter" class="block w-full p-3 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500" disabled>
+            <option value="all">عرض الكل</option>
+          </select>
+        </div>
+        <button id="export-button" class="px-8 py-3 bg-green-600 text-white font-semibold rounded-md shadow-md hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 disabled:bg-gray-400 disabled:cursor-not-allowed" disabled>
+          تصدير إلى Excel
+        </button>
+      </div>
+    </header>
+
+    <div id="loading-message" class="text-center p-8">
+      <p class="text-lg text-gray-600">جاري تحميل البيانات من ملف data.json...</p>
+    </div>
+    <div id="error-message" class="hidden text-center p-8 bg-red-100 border border-red-400 text-red-700 rounded-lg"></div>
+
+    <div id="dashboard-container" class="space-y-12"></div>
+  </div>
+
+  <script>
+    const container=document.getElementById('dashboard-container');
+    const managerFilter=document.getElementById('manager-filter');
+    const loadingMessage=document.getElementById('loading-message');
+    const errorMessage=document.getElementById('error-message');
+    const exportButton=document.getElementById('export-button');
+
+    function normalizeName(name){
+      if(!name||typeof name!=='string')return '';
+      return name.toLowerCase().trim().replace(/[-_]/g,' ').replace(/\s+/g,' ');
+    }
+
+    async function initializeDashboard(){
+      try{
+        const response=await fetch('data.json');
+        if(!response.ok) throw new Error("فشل تحميل ملف data.json");
+        const data=await response.json();
+        const {managers,employees_by_store}=data;
+        loadingMessage.style.display='none';
+        managerFilter.disabled=false;
+        exportButton.disabled=false;
+        renderDashboard(employees_by_store,managers);
+      }catch(err){
+        loadingMessage.style.display='none';
+        errorMessage.textContent=err.message;
+        errorMessage.classList.remove('hidden');
+      }
+    }
+
+    function formatCurrency(num){
+      return new Intl.NumberFormat('en-SA',{style:'currency',currency:'SAR',minimumFractionDigits:0}).format(num);
+    }
+
+    function updateStoreTotals(storeId){
+      const card=document.getElementById(`store-card-${storeId}`);
+      if(!card)return;
+      const input=card.querySelector('.store-target-input');
+      const target=parseFloat(input.value)||0;
+      let total=0;
+      card.querySelectorAll('.employee-target-input').forEach(inp=>total+=parseFloat(inp.value)||0);
+      const totalEl=card.querySelector('.total-employees-target');
+      const badge=card.querySelector('.status-badge');
+      const text=card.querySelector('.status-text');
+      totalEl.textContent=formatCurrency(total);
+      if(target===0){
+        badge.className='status-badge p-2 h-10 flex items-center justify-center rounded-md font-bold bg-gray-100 text-gray-800';
+        text.textContent='أدخل هدف المعرض';
+      }else if(total>=target){
+        badge.className='status-badge p-2 h-10 flex items-center justify-center rounded-md font-bold bg-green-100 text-green-800';
+        text.textContent='تم تحقيق الهدف';
+      }else{
+        badge.className='status-badge p-2 h-10 flex items-center justify-center rounded-md font-bold bg-red-100 text-red-800';
+        text.textContent=`متبقي: ${formatCurrency(target-total)}`;
+      }
+    }
+
+    function createStoreCard(storeId,storeData){
+      const employees=storeData.employees||[];
+      const targetValue=storeData.target||0;
+      let employeesHtml='';
+
+      let headerHtml=`<th class="p-2">استثناء</th><th class="p-2">اسم الموظف</th>`;
+      for(let i=1;i<=10;i++){
+        headerHtml+=`<th class="p-2">مبيعات شهر ${i}</th>`;
+      }
+      headerHtml+=`<th class="p-2 text-blue-600">التارجت الجديد</th><th class="p-2">ملاحظات</th>`;
+
+      if(employees.length>0){
+        employees.forEach(emp=>{
+          const salesCells=emp.sales.map(s=>`<td class="p-2 text-gray-600 text-xs md:text-sm">${formatCurrency(s)}</td>`).join('');
+          employeesHtml+=`
+            <tr class="border-b" data-excluded="false" data-employee-name="${emp.name}" data-system-name="${emp.system_name}">
+              <td class="p-2 text-center"><button class="exclude-toggle text-lg">✔️</button></td>
+              <td class="p-2 font-semibold">${emp.name}</td>
+              ${salesCells}
+              <td class="p-2"><input type="number" min="0" placeholder="0" class="employee-target-input w-24 p-2 border rounded-md" data-store-id="${storeId}"></td>
+              <td class="p-2 text-gray-500">${emp.notes||''}</td>
+            </tr>`;
+        });
+      }else{
+        employeesHtml=`<tr><td colspan="13" class="p-4 text-center text-gray-500">لا يوجد موظفين لهذا المعرض.</td></tr>`;
+      }
+
+      return `
+      <div class="bg-white rounded-xl shadow-md p-6 border border-gray-200" id="store-card-${storeId}">
+        <h3 class="text-lg font-bold text-gray-800 mb-4">${storeData.original_name}</h3>
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6 bg-gray-50 p-4 rounded-lg items-end">
+          <div>
+            <label class="block text-sm font-medium mb-1">الهدف الإجمالي للمعرض</label>
+            <input type="number" min="0" value="${targetValue}" class="store-target-input w-full p-2 border rounded-md" data-store-id="${storeId}">
+          </div>
+          <div><button class="auto-distribute-btn w-full px-4 py-2 bg-blue-600 text-white rounded-md" data-store-id="${storeId}">توزيع تلقائي</button></div>
+          <div>
+            <label class="block text-sm font-medium mb-1">مجموع أهداف الموظفين</label>
+            <div class="total-employees-target p-2 h-10 flex items-center font-bold text-lg text-blue-700">${formatCurrency(0)}</div>
+          </div>
+          <div>
+            <label class="block text-sm font-medium mb-1">الحالة</label>
+            <div class="status-badge p-2 h-10 flex items-center justify-center rounded-md bg-gray-100 text-gray-800 font-bold">
+              <span class="status-text">أدخل هدف المعرض</span>
+            </div>
+          </div>
+        </div>
+        <div>
+          <table class="w-full text-xs md:text-sm employee-table">
+            <thead class="bg-gray-100 text-gray-600 uppercase"><tr>${headerHtml}</tr></thead>
+            <tbody>${employeesHtml}</tbody>
+          </table>
+        </div>
+      </div>`;
+    }
+
+    function renderDashboard(employeesByStore,managers){
+      let storeId=1;
+      for(const manager in managers){
+        const managerSection=document.createElement('div');
+        managerSection.className='manager-section';
+        managerSection.dataset.managerName=manager;
+        let html='';
+        managers[manager].forEach(store=>{
+          const norm=normalizeName(store);
+          const data=employeesByStore[norm];
+          if(data) html+=createStoreCard(storeId++,data);
+        });
+        managerSection.innerHTML=`<h2 class="text-xl font-bold text-indigo-600 border-b-2 border-indigo-200 pb-2 mb-6">${manager}</h2><div class="grid grid-cols-1 gap-6">${html}</div>`;
+        container.appendChild(managerSection);
+        const option=document.createElement('option');
+        option.value=manager; option.textContent=manager;
+        managerFilter.appendChild(option);
+      }
+    }
+
+    function autoDistributeTarget(id){
+      const card=document.getElementById(`store-card-${id}`);
+      const storeTarget=parseFloat(card.querySelector('.store-target-input').value)||0;
+      if(storeTarget===0)return;
+      const rows=card.querySelectorAll('tbody tr[data-excluded="false"]');
+      const per=storeTarget/(rows.length||1);
+      rows.forEach(r=>r.querySelector('.employee-target-input').value=Math.round(per/1000)*1000);
+      updateStoreTotals(id);
+    }
+
+    function exportToExcel(){
+      const data=[];
+      document.querySelectorAll('.manager-section').forEach(section=>{
+        const managerName=section.querySelector('h2').textContent.trim();
+        section.querySelectorAll('tbody tr').forEach(row=>{
+          if(row.dataset.employeeName){
+            const targetVal=parseFloat(row.querySelector('.employee-target-input').value)||0;
+            const storeName=row.closest('.bg-white').querySelector('h3').textContent.trim();
+            const notes=row.querySelector('td:last-child').textContent.trim();
+            data.push({
+              'المدير المسؤول':managerName,
+              'اسم المعرض':storeName,
+              'اسم الموظف':row.dataset.employeeName,
+              'اسمه عالسستم':row.dataset.systemName,
+              'التارجت المدخل':targetVal,
+              'الملاحظات':notes
+            });
+          }
+        });
+      });
+      if(data.length===0)return alert('لا يوجد بيانات للتصدير');
+      const ws=XLSX.utils.json_to_sheet(data);
+      const wb=XLSX.utils.book_new();
+      XLSX.utils.book_append_sheet(wb,ws,'Targets');
+      XLSX.writeFile(wb,'Targets_Export.xlsx');
+    }
+
+    document.addEventListener('DOMContentLoaded',()=>{
+      initializeDashboard();
+      container.addEventListener('input',e=>{
+        if(e.target.matches('.store-target-input,.employee-target-input')) updateStoreTotals(e.target.dataset.storeId);
+      });
+      managerFilter.addEventListener('change',e=>{
+        const selected=e.target.value;
+        document.querySelectorAll('.manager-section').forEach(sec=>{
+          sec.style.display=(selected==='all'||sec.dataset.managerName===selected)?'block':'none';
+        });
+      });
+      exportButton.addEventListener('click',exportToExcel);
+      container.addEventListener('click',e=>{
+        if(e.target.matches('.auto-distribute-btn')) autoDistributeTarget(e.target.dataset.storeId);
+        if(e.target.matches('.exclude-toggle')){
+          const row=e.target.closest('tr');
+          const storeId=e.target.closest('.bg-white').id.replace('store-card-','');
+          const excluded=row.dataset.excluded==='true';
+          row.dataset.excluded=!excluded;
+          e.target.textContent=!excluded?'🚫':'✔️';
+          row.classList.toggle('is-excluded',!excluded);
+          if(!excluded){ row.querySelector('.employee-target-input').value=0; updateStoreTotals(storeId); }
+        }
+      });
+    });
+  </script>
+</body>
+</html>
