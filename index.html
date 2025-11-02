@@ -81,11 +81,10 @@
       }
     }
 
-   function formatCurrency(num){
-  if (isNaN(num)) return '0';
-  return new Intl.NumberFormat('en-SA', { minimumFractionDigits: 0 }).format(num);
-}
-
+    function formatCurrency(num){
+      if (isNaN(num)) return '0';
+      return new Intl.NumberFormat('en-SA', { minimumFractionDigits: 0 }).format(num);
+    }
 
     function updateStoreTotals(storeId){
       const card=document.getElementById(`store-card-${storeId}`);
@@ -119,8 +118,7 @@
       for(let i=1;i<=10;i++){
         headerHtml+=`<th class="p-2">مبيعات شهر ${i}</th>`;
       }
-     headerHtml+=`<th class="p-2 text-blue-600">التارجت</th><th class="p-2">ملاحظات</th>`;
-
+      headerHtml+=`<th class="p-2 text-blue-600">التارجت</th><th class="p-2">ملاحظات</th>`;
 
       if(employees.length>0){
         employees.forEach(emp=>{
@@ -130,14 +128,12 @@
               <td class="p-2 text-center"><button class="exclude-toggle text-lg">✔️</button></td>
               <td class="p-2 font-semibold">${emp.name}</td>
               ${salesCells}
-             <td class="p-2">
-  <input type="number" min="0" value="${emp.manual_target || 0}" 
-         class="employee-target-input w-24 p-2 border rounded-md font-semibold text-blue-700" 
-         data-store-id="${storeId}">
-</td>
-<td class="p-2 text-gray-500">${emp.notes || ''}</td>
-
-              <td class="p-2 text-gray-500">${emp.notes||''}</td>
+              <td class="p-2">
+                <input type="number" min="0" value="${emp.manual_target || 0}" 
+                       class="employee-target-input w-24 p-2 border rounded-md font-semibold text-blue-700" 
+                       data-store-id="${storeId}">
+              </td>
+              <td class="p-2 text-gray-500">${emp.notes || ''}</td>
             </tr>`;
         });
       }else{
