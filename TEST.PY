@@ -54,6 +54,7 @@ def process_data():
             employee_name = row.get('الاسم', '')
             system_name = row.get('اسم الموظف على سيستم', '')
             notes = row.get('ملاحظات', '')
+            input_target = row.get('التارجت المدخل', 0)
 
             if pd.notna(store_name_raw) and store_name_raw and pd.notna(employee_name) and employee_name:
                 normalized_store_name = normalize_name(store_name_raw)
@@ -69,13 +70,16 @@ def process_data():
                 sales = []
                 for i in range(1, 11):
                     val = row.get(f'مبيعات شهر {i}', 0)
-                    sales.append(0 if pd.isna(val) else float(val))
+                    sales.append(0 if pd.isna(val) else int(round(val)))
+
 
                 employees_data[normalized_store_name]['employees'].append({
                     'name': str(employee_name).strip(),
                     'system_name': str(system_name).strip(),
                     'sales': sales,
-                    'notes': str(notes).strip() if pd.notna(notes) else ''
+                    'notes': str(notes).strip() if pd.notna(notes) else '',
+                    'manual_target': 0 if pd.isna(input_target) else int(round(input_target))
+
                 })
 
         # === الدمج والحفظ ===
