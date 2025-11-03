@@ -38,7 +38,7 @@
             "05-Haifa Mall",
             "07-Arab Mall",
             "56- Aziz Mall 2",
-            "48 - Jeddah Park"
+            "48- Jeddah Park"
         ],
         "عبد الجليل الحبال": [
             "15-Riyadh Othaim Mall",
@@ -5277,8 +5277,8 @@
                 }
             ]
         },
-        "48  jeddah park": {
-            "original_name": "48 - Jeddah Park",
+        "48 jeddah park": {
+            "original_name": "48- Jeddah Park",
             "target": 730000.0,
             "employees": [
                 {
