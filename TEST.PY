@@ -68,7 +68,7 @@ def process_data():
 
                 # جمع مبيعات الشهور 1 إلى 10
                 sales = []
-                for i in range(1, 11):
+                for i in range(1, 12):
                     val = row.get(f'مبيعات شهر {i}', 0)
                     sales.append(0 if pd.isna(val) else int(round(val)))
 
