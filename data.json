@@ -77,7 +77,7 @@
     "employees_by_store": {
         "04 andalos mall": {
             "original_name": "04-Andalos Mall",
-            "target": 700000.0,
+            "target": 680000.0,
             "employees": [
                 {
                     "name": "أسماء عبدالله الحجوري",
@@ -303,7 +303,7 @@
         },
         "05 haifa mall": {
             "original_name": "05-Haifa Mall",
-            "target": 300000.0,
+            "target": 280000.0,
             "employees": [
                 {
                     "name": "احمد يوسف",
@@ -429,7 +429,7 @@
         },
         "06 red sea mall": {
             "original_name": "06-Red Sea Mall",
-            "target": 1000000.0,
+            "target": 920000.0,
             "employees": [
                 {
                     "name": "نزار فيسيار",
@@ -675,7 +675,7 @@
         },
         "07 arab mall": {
             "original_name": "07-Arab Mall",
-            "target": 625000.0,
+            "target": 600000.0,
             "employees": [
                 {
                     "name": "حارس كفران كوندان",
@@ -861,7 +861,7 @@
         },
         "08 makkah mall": {
             "original_name": "08-Makkah Mall",
-            "target": 1100000.0,
+            "target": 990000.0,
             "employees": [
                 {
                     "name": "صفية مظفر",
@@ -1087,7 +1087,7 @@
         },
         "09 al salam mall": {
             "original_name": "09-Al-Salam Mall",
-            "target": 380000.0,
+            "target": 360000.0,
             "employees": [
                 {
                     "name": "الاء العمري",
@@ -1233,7 +1233,7 @@
         },
         "11 jouri mall": {
             "original_name": "11-Jouri Mall",
-            "target": 400000.0,
+            "target": 370000.0,
             "employees": [
                 {
                     "name": "رهف منصوري",
@@ -1399,7 +1399,7 @@
         },
         "12 al hamra mall": {
             "original_name": "12-Al_Hamra Mall",
-            "target": 650000.0,
+            "target": 680000.0,
             "employees": [
                 {
                     "name": "محمد نبيل بابات",
@@ -1525,7 +1525,7 @@
         },
         "13 al yasmin mall": {
             "original_name": "13-Al-Yasmin Mall",
-            "target": 600000.0,
+            "target": 590000.0,
             "employees": [
                 {
                     "name": "انوار السريحي",
@@ -1751,7 +1751,7 @@
         },
         "14 al kamal mall": {
             "original_name": "14-Al Kamal Mall",
-            "target": 195000.0,
+            "target": 175000.0,
             "employees": [
                 {
                     "name": "نوره هوساوي",
@@ -1877,7 +1877,7 @@
         },
         "15 riyadh othaim mall": {
             "original_name": "15-Riyadh Othaim Mall",
-            "target": 300000.0,
+            "target": 270000.0,
             "employees": [
                 {
                     "name": "new",
@@ -2189,7 +2189,7 @@
         },
         "17 arar othaim mall": {
             "original_name": "17-Arar Othaim Mall",
-            "target": 100000.0,
+            "target": 95000.0,
             "employees": [
                 {
                     "name": "فهد كوتي (شيراليل)",
@@ -2255,7 +2255,7 @@
         },
         "18 al khayyat center": {
             "original_name": "18-Al_Khayyat Center",
-            "target": 350000.0,
+            "target": 330000.0,
             "employees": [
                 {
                     "name": "محمد أسامة جمال الدين",
@@ -2361,7 +2361,7 @@
         },
         "19 hail othaim mall": {
             "original_name": "19-Hail Othaim Mall",
-            "target": 375000.0,
+            "target": 390000.0,
             "employees": [
                 {
                     "name": "عيدة جبل الشمري",
@@ -2507,7 +2507,7 @@
         },
         "20 sitten street makkah": {
             "original_name": "20-Sitten Street Makkah",
-            "target": 390000.0,
+            "target": 380000.0,
             "employees": [
                 {
                     "name": "محمد علي كامل",
@@ -2633,7 +2633,7 @@
         },
         "21 abha al rashid mall new": {
             "original_name": "21-Abha Al_Rashid Mall New",
-            "target": 700000.0,
+            "target": 650000.0,
             "employees": [
                 {
                     "name": "ضي عبدالله",
@@ -2819,7 +2819,7 @@
         },
         "22 tabuk park": {
             "original_name": "22-Tabuk Park",
-            "target": 525000.0,
+            "target": 490000.0,
             "employees": [
                 {
                     "name": "امجاد ظافر الشهري",
@@ -3005,7 +3005,7 @@
         },
         "23 alia mall madinah": {
             "original_name": "23-Alia Mall Madinah",
-            "target": 675000.0,
+            "target": 620000.0,
             "employees": [
                 {
                     "name": "وضحى الجابري",
@@ -3231,7 +3231,7 @@
         },
         "24 yanbu dana mall": {
             "original_name": "24-Yanbu Dana Mall",
-            "target": 280000.0,
+            "target": 250000.0,
             "employees": [
                 {
                     "name": "ثاجودين باثنقادي",
@@ -3337,7 +3337,7 @@
         },
         "25 rabwa othaim mall": {
             "original_name": "25-Rabwa Othaim Mall",
-            "target": 290000.0,
+            "target": 270000.0,
             "employees": [
                 {
                     "name": "سالمانول فارس مداثيبارمبيل",
@@ -3463,7 +3463,7 @@
         },
         "26 al noor mall madinah": {
             "original_name": "26-Al-Noor Mall Madinah",
-            "target": 580000.0,
+            "target": 520000.0,
             "employees": [
                 {
                     "name": "شوق اليوبي",
@@ -3649,7 +3649,7 @@
         },
         "27 dhahran mall khobar": {
             "original_name": "27-Dhahran Mall khobar",
-            "target": 1300000.0,
+            "target": 1250000.0,
             "employees": [
                 {
                     "name": "مروة الشعلان",
@@ -3875,7 +3875,7 @@
         },
         "28 al nakheel mall dammam": {
             "original_name": "28-Al Nakheel Mall Dammam",
-            "target": 1000000.0,
+            "target": 850000.0,
             "employees": [
                 {
                     "name": "شمس الدين كونغاث",
@@ -4081,7 +4081,7 @@
         },
         "29 al nakheel mall riyadh": {
             "original_name": "29-Al Nakheel Mall Riyadh",
-            "target": 900000.0,
+            "target": 950000.0,
             "employees": [
                 {
                     "name": "محمد فيفاز",
@@ -4313,7 +4313,7 @@
         },
         "32 atyaf mall riyadh": {
             "original_name": "32-Atyaf Mall Riyadh",
-            "target": 250000.0,
+            "target": 280000.0,
             "employees": [
                 {
                     "name": "شهد العتيبي",
@@ -4359,7 +4359,7 @@
         },
         "36 al jubail mall": {
             "original_name": "36-Al jubail Mall",
-            "target": 250000.0,
+            "target": 240000.0,
             "employees": [
                 {
                     "name": "وعد هادي عبسي",
@@ -4445,7 +4445,7 @@
         },
         "38 al riyadh park": {
             "original_name": "38-Al_Riyadh Park",
-            "target": 650000.0,
+            "target": 660000.0,
             "employees": [
                 {
                     "name": "سالمانول فارس باركال",
@@ -4551,7 +4551,7 @@
         },
         "39 salam mall riyadh": {
             "original_name": "39-Salam Mall Riyadh",
-            "target": 350000.0,
+            "target": 330000.0,
             "employees": [
                 {
                     "name": "روابي هوساوي",
@@ -4677,7 +4677,7 @@
         },
         "40 hayat mall riyad": {
             "original_name": "40-Hayat Mall Riyad",
-            "target": 325000.0,
+            "target": 360000.0,
             "employees": [
                 {
                     "name": "عريب القحطاني",
@@ -5115,7 +5115,7 @@
         },
         "44 al jouf center": {
             "original_name": "44-Al-Jouf Center",
-            "target": 100000.0,
+            "target": 90000.0,
             "employees": [
                 {
                     "name": "خديجة الرويلي",
@@ -5161,7 +5161,7 @@
         },
         "45 riyadh gallery mall": {
             "original_name": "45- Riyadh Gallery Mall",
-            "target": 500000.0,
+            "target": 550000.0,
             "employees": [
                 {
                     "name": "منيرة",
@@ -5307,7 +5307,7 @@
         },
         "46 khaleej mall riyadh": {
             "original_name": "46-Khaleej Mall Riyadh",
-            "target": 500000.0,
+            "target": 550000.0,
             "employees": [
                 {
                     "name": "وفاء الفرج",
@@ -5539,7 +5539,7 @@
         },
         "48 jeddah park": {
             "original_name": "48- Jeddah Park",
-            "target": 650000.0,
+            "target": 0.0,
             "employees": [
                 {
                     "name": "امل المالكي",
@@ -5785,7 +5785,7 @@
         },
         "49 alahsa mall": {
             "original_name": "49-AlAhsa Mall",
-            "target": 300000.0,
+            "target": 290000.0,
             "employees": [
                 {
                     "name": "اجمل",
@@ -5911,7 +5911,7 @@
         },
         "50 meem plaza riyadh": {
             "original_name": "50-Meem Plaza Riyadh",
-            "target": 450000.0,
+            "target": 500000.0,
             "employees": [
                 {
                     "name": "مراد محمد",
@@ -6017,7 +6017,7 @@
         },
         "51 park avenue riyadh": {
             "original_name": "51-Park Avenue Riyadh",
-            "target": 490000.0,
+            "target": 530000.0,
             "employees": [
                 {
                     "name": "خالد خندش",
@@ -6143,7 +6143,7 @@
         },
         "52 al baha mall": {
             "original_name": "52-Al_Baha Mall",
-            "target": 200000.0,
+            "target": 180000.0,
             "employees": [
                 {
                     "name": "محمد مصطفى كورمبي",
@@ -6229,7 +6229,7 @@
         },
         "53 al basateen mall": {
             "original_name": "53-Al Basateen Mall",
-            "target": 150000.0,
+            "target": 135000.0,
             "employees": [
                 {
                     "name": "وعد توفيق",
@@ -6275,7 +6275,7 @@
         },
         "54 the village": {
             "original_name": "54-THE VILLAGE",
-            "target": 725000.0,
+            "target": 700000.0,
             "employees": [
                 {
                     "name": "نجود الشهري",
@@ -6481,7 +6481,7 @@
         },
         "55 jabl omar": {
             "original_name": "55- Jabl Omar",
-            "target": 380000.0,
+            "target": 370000.0,
             "employees": [
                 {
                     "name": "محمد انصر",
@@ -6793,7 +6793,7 @@
         },
         "57 sauq7": {
             "original_name": "57-Sauq7",
-            "target": 200000.0,
+            "target": 220000.0,
             "employees": [
                 {
                     "name": "علي كنيد",
