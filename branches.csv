@@ -1,50 +1,50 @@
 BRANCH,AREA MANAGER,Target
-Warehouse,ÇæäáÇíä,0
-06-Red Sea Mall,ÇáãäØŞÉ ÇáÛÑÈíÉ,0
-13-Al-Yasmin Mall,ÇáãäØŞÉ ÇáÛÑÈíÉ,0
-54-THE VILLAGE,ÇáãäØŞÉ ÇáÛÑÈíÉ,0
-21-Abha Al_Rashid Mall New,ÇãÇäí ÚÓíÑí,0
-43-Mujan Park,ÇãÇäí ÚÓíÑí,0
-52-Al_Baha Mall,ÇãÇäí ÚÓíÑí,0
-16-Ehsa Othaim Mall,ÌåÇÏ ÇíæÈí,0
-27-Dhahran Mall khobar,ÌåÇÏ ÇíæÈí,0
-28-Al Nakheel Mall Dammam,ÌåÇÏ ÇíæÈí,0
-36-Al jubail Mall,ÌåÇÏ ÇíæÈí,0
-42-Dareen Mall Dammam,ÌåÇÏ ÇíæÈí,0
-49-AlAhsa Mall,ÌåÇÏ ÇíæÈí,0
-17-Arar Othaim Mall,Îáíá ÇáÕÇäÚ,0
-22-Tabuk Park,Îáíá ÇáÕÇäÚ,0
-23-Alia Mall Madinah,Îáíá ÇáÕÇäÚ,0
-24-Yanbu Dana Mall,Îáíá ÇáÕÇäÚ,0
-26-Al-Noor Mall Madinah,Îáíá ÇáÕÇäÚ,0
-44-Al-Jouf Center,Îáíá ÇáÕÇäÚ,0
-08-Makkah Mall,ÑÖæÇä ÚØíæí,0
-20-Sitten Street Makkah,ÑÖæÇä ÚØíæí,0
-55- Jabl Omar,ÑÖæÇä ÚØíæí,0
-05-Haifa Mall,ÔÑíİÉ ÇáÚãÑí,0
-07-Arab Mall,ÔÑíİÉ ÇáÚãÑí,0
-56- Aziz Mall 2,ÔÑíİÉ ÇáÚãÑí,0
-48- Jeddah Park,ÔÑíİÉ ÇáÚãÑí,0
-15-Riyadh Othaim Mall,ÚÈÏ ÇáÌáíá ÇáÍÈÇá,0
-25-Rabwa Othaim Mall,ÚÈÏ ÇáÌáíá ÇáÍÈÇá,0
-39-Salam Mall Riyadh,ÚÈÏ ÇáÌáíá ÇáÍÈÇá,0
-50-Meem Plaza Riyadh,ÚÈÏ ÇáÌáíá ÇáÍÈÇá,0
-30-Tala Mall Riyadh,ÚÈÏÇááå ÇáÓÑÏÇÍ,0
-40-Hayat Mall Riyad,ÚÈÏÇááå ÇáÓÑÏÇÍ,0
-19-Hail Othaim Mall,ÚÈÏÇááå ÇáÓÑÏÇÍ,0
-47-Al-Nakheel Plaza,ÚÈÏÇááå ÇáÓÑÏÇÍ,0
-04-Andalos Mall,ÚÈíÏÉ ÇáÓÈÇÚí,0
-09-Al-Salam Mall,ÚÈíÏÉ ÇáÓÈÇÚí,0
+Warehouse,ÇæäáÇíä,1000000
+06-Red Sea Mall,ÇáãäØŞÉ ÇáÛÑÈíÉ,1000000
+13-Al-Yasmin Mall,ÇáãäØŞÉ ÇáÛÑÈíÉ,600000
+54-THE VILLAGE,ÇáãäØŞÉ ÇáÛÑÈíÉ,725000
+21-Abha Al_Rashid Mall New,ÇãÇäí ÚÓíÑí,700000
+43-Mujan Park,ÇãÇäí ÚÓíÑí,500000
+52-Al_Baha Mall,ÇãÇäí ÚÓíÑí,200000
+16-Ehsa Othaim Mall,ÌåÇÏ ÇíæÈí,625000
+27-Dhahran Mall khobar,ÌåÇÏ ÇíæÈí,1300000
+28-Al Nakheel Mall Dammam,ÌåÇÏ ÇíæÈí,1000000
+36-Al jubail Mall,ÌåÇÏ ÇíæÈí,250000
+42-Dareen Mall Dammam,ÌåÇÏ ÇíæÈí,400000
+49-AlAhsa Mall,ÌåÇÏ ÇíæÈí,300000
+17-Arar Othaim Mall,Îáíá ÇáÕÇäÚ,100000
+22-Tabuk Park,Îáíá ÇáÕÇäÚ,525000
+23-Alia Mall Madinah,Îáíá ÇáÕÇäÚ,675000
+24-Yanbu Dana Mall,Îáíá ÇáÕÇäÚ,280000
+26-Al-Noor Mall Madinah,Îáíá ÇáÕÇäÚ,580000
+44-Al-Jouf Center,Îáíá ÇáÕÇäÚ,100000
+08-Makkah Mall,ÑÖæÇä ÚØíæí,1100000
+20-Sitten Street Makkah,ÑÖæÇä ÚØíæí,390000
+55- Jabl Omar,ÑÖæÇä ÚØíæí,380000
+05-Haifa Mall,ÔÑíİÉ ÇáÚãÑí,300000
+07-Arab Mall,ÔÑíİÉ ÇáÚãÑí,625000
+56- Aziz Mall 2,ÔÑíİÉ ÇáÚãÑí,350000
+48 - Jeddah Park,ÔÑíİÉ ÇáÚãÑí,650000
+15-Riyadh Othaim Mall,ÚÈÏ ÇáÌáíá ÇáÍÈÇá,300000
+25-Rabwa Othaim Mall,ÚÈÏ ÇáÌáíá ÇáÍÈÇá,290000
+39-Salam Mall Riyadh,ÚÈÏ ÇáÌáíá ÇáÍÈÇá,350000
+50-Meem Plaza Riyadh,ÚÈÏ ÇáÌáíá ÇáÍÈÇá,450000
+30-Tala Mall Riyadh,ÚÈÏÇááå ÇáÓÑÏÇÍ,300000
+40-Hayat Mall Riyad,ÚÈÏÇááå ÇáÓÑÏÇÍ,325000
+19-Hail Othaim Mall,ÚÈÏÇááå ÇáÓÑÏÇÍ,375000
+47-Al-Nakheel Plaza,ÚÈÏÇááå ÇáÓÑÏÇÍ,400000
+04-Andalos Mall,ÚÈíÏÉ ÇáÓÈÇÚí,700000
+09-Al-Salam Mall,ÚÈíÏÉ ÇáÓÈÇÚí,380000
 01-Jeddah INT Market,ÚÈíÏÉ ÇáÓÈÇÚí,0
-18-Al_Khayyat Center,ÚÈíÏÉ ÇáÓÈÇÚí,0
-53-Al Basateen Mall,ÚÈíÏÉ ÇáÓÈÇÚí,0
-57-Sauq7,ÚÈíÏÉ ÇáÓÈÇÚí,0
-12-Al_Hamra Mall,ãÍãÏßáæ,0
-32-Atyaf Mall Riyadh,ãÍãÏßáæ,0
-38-Al_Riyadh Park,ãÍãÏßáæ,0
-29-Al Nakheel Mall Riyadh,ãÍãÏßáæ,0
-45- Riyadh Gallery Mall,ãÍãÏßáæ,0
-46-Khaleej Mall Riyadh,ãÍãÏßáæ,0
-51-Park Avenue Riyadh,ãÍãÏßáæ,0
-11-Jouri Mall,ãäØŞÉ ÇáØÇÆİ,0
-14-Al Kamal Mall,ãäØŞÉ ÇáØÇÆİ,0
+18-Al_Khayyat Center,ÚÈíÏÉ ÇáÓÈÇÚí,350000
+53-Al Basateen Mall,ÚÈíÏÉ ÇáÓÈÇÚí,150000
+57-Sauq7,ÚÈíÏÉ ÇáÓÈÇÚí,200000
+12-Al_Hamra Mall,ãÍãÏßáæ,650000
+32-Atyaf Mall Riyadh,ãÍãÏßáæ,250000
+38-Al_Riyadh Park,ãÍãÏßáæ,650000
+29-Al Nakheel Mall Riyadh,ãÍãÏßáæ,900000
+45- Riyadh Gallery Mall,ãÍãÏßáæ,500000
+46-Khaleej Mall Riyadh,ãÍãÏßáæ,500000
+51-Park Avenue Riyadh,ãÍãÏßáæ,490000
+11-Jouri Mall,ãäØŞÉ ÇáØÇÆİ,400000
+14-Al Kamal Mall,ãäØŞÉ ÇáØÇÆİ,195000
