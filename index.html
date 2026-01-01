@@ -115,9 +115,10 @@
       let employeesHtml='';
 
       let headerHtml=`<th class="p-2">استثناء</th><th class="p-2">اسم الموظف</th>`;
-      for(let i=1;i<=11;i++){
-        headerHtml+=`<th class="p-2">مبيعات شهر ${i}</th>`;
-      }
+      for(let i=1;i<=12;i++){
+		headerHtml+=`<th class="p-2">مبيعات شهر ${i}</th>`;
+	}
+
       headerHtml+=`<th class="p-2 text-blue-600">التارجت</th><th class="p-2">ملاحظات</th>`;
 
       if(employees.length>0){
@@ -137,7 +138,7 @@
             </tr>`;
         });
       }else{
-        employeesHtml=`<tr><td colspan="13" class="p-4 text-center text-gray-500">لا يوجد موظفين لهذا المعرض.</td></tr>`;
+        employeesHtml=`<tr><td colspan="16" class="p-4 text-center text-gray-500">لا يوجد موظفين لهذا المعرض.</td></tr>`;
       }
 
       return `
