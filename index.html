@@ -208,10 +208,12 @@
           if(row.dataset.employeeName){
             const targetVal=parseFloat(row.querySelector('.employee-target-input').value)||0;
             const storeName=row.closest('.bg-white').querySelector('h3').textContent.trim();
+            const storeTargetVal = parseFloat(row.closest('.bg-white').querySelector('.store-target-input').value) || 0;
             const notes=row.querySelector('td:last-child').textContent.trim();
             data.push({
               'المدير المسؤول':managerName,
               'اسم المعرض':storeName,
+              'تارجت المعرض': storeTargetVal,
               'اسم الموظف':row.dataset.employeeName,
               'اسمه عالسستم':row.dataset.systemName,
               'التارجت المدخل':targetVal,
